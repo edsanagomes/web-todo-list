@@ -5,7 +5,7 @@ const button = document.getElementById('add-todo-button') as HTMLButtonElement
 const list = document.getElementById('todo-elements') as HTMLUListElement
 const errorMessage = document.getElementById('error-message') as HTMLDivElement
 function addTodo() {
-  const text = input.value
+  const text = input.value.trim()
   if (text === '') {
     errorMessage.textContent = 'Please add a task !'
     return
