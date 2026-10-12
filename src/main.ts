@@ -19,7 +19,11 @@ function renderTodos() {
 renderTodos()
 
 function saveTodos() {
-  localStorage.setItem('todos', JSON.stringify(todos))
+  try {
+    localStorage.setItem('todos', JSON.stringify(todos))
+  } catch {
+    errorMessage.textContent = 'storage is full or blocked'
+  }
 }
 
 function addTodo() {
