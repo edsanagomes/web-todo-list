@@ -5,14 +5,29 @@ const button = document.getElementById('add-todo-button') as HTMLButtonElement
 const list = document.getElementById('todo-elements') as HTMLUListElement
 const errorMessage = document.getElementById('error-message') as HTMLDivElement
 const savedTodos = localStorage.getItem('todos')
-const todos: string[] = savedTodos ? JSON.parse(savedTodos) : []
+const todos: todo[] = savedTodos ? JSON.parse(savedTodos) : []
+
+type todo = {
+  text: string
+  completed: boolean
+}
 
 function renderTodos() {
   // display all todos in the list
   list.innerHTML = ''
-  todos.forEach((text) => {
+  todos.forEach((todo) => {
     const item = document.createElement('li')
-    item.textContent = text
+    const checkbox = document.createElement('input')
+    checkbox.type = 'checkbox'
+    checkbox.checked = todo.completed
+    checkbox.addEventListener('change', () => {
+      todo.completed = checkbox.checked
+      saveTodos()
+    })
+    const span = document.createElement('span')
+    span.textContent = todo.text
+    item.appendChild(checkbox)
+    item.appendChild(span)
     list.appendChild(item)
   })
 }
@@ -33,7 +48,7 @@ function addTodo() {
     return
   }
   errorMessage.textContent = ''
-  todos.push(text)
+  todos.push({ text: text, completed: false })
   saveTodos()
   renderTodos()
   input.value = ''
