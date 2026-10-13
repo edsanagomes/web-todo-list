@@ -15,7 +15,7 @@ type todo = {
 function renderTodos() {
   // display all todos in the list
   list.innerHTML = ''
-  todos.forEach((todo) => {
+  todos.forEach((todo, index) => {
     const item = document.createElement('li')
     const checkbox = document.createElement('input')
     checkbox.type = 'checkbox'
@@ -24,10 +24,20 @@ function renderTodos() {
       todo.completed = checkbox.checked
       saveTodos()
     })
+
     const span = document.createElement('span')
     span.textContent = todo.text
+    const removeBtn = document.createElement('button')
+    removeBtn.textContent = '🚮'
+    removeBtn.classList.add('remove-btn')
+    removeBtn.addEventListener('click', () => {
+      todos.splice(index, 1)
+      saveTodos()
+      renderTodos()
+    })
     item.appendChild(checkbox)
     item.appendChild(span)
+    item.appendChild(removeBtn)
     list.appendChild(item)
   })
 }
@@ -60,4 +70,5 @@ input.addEventListener('keydown', (event) => {
     addTodo()
   }
 })
+
 console.log('Hello from typescript')

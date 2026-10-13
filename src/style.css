@@ -21,20 +21,31 @@ body {
 #error-message {
   color: red;
 }
+
 #add-todo-button {
-  padding: 8px 12px;
+  padding: 8px 10px;
   font-size: 1rem;
 }
 
 #todo-elements {
   width: 250px;
   margin-top: 15px;
+  list-style: none;
 }
 
 #todo-elements li {
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
   background: #f1f1f1;
   padding: 8px;
+  gap: 10px;
   margin-bottom: 5px;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  margin-left: auto;
 }
