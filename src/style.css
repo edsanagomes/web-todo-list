@@ -34,7 +34,7 @@ body {
 }
 
 #todo-elements li {
-  overflow-wrap: normal;
+  overflow-wrap: anywhere;
   background: #f1f1f1;
   padding: 8px;
   gap: 10px;
