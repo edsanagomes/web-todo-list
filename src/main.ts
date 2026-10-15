@@ -4,6 +4,7 @@ const input = document.getElementById('todo-input') as HTMLInputElement
 const button = document.getElementById('add-todo-button') as HTMLButtonElement
 const list = document.getElementById('todo-elements') as HTMLUListElement
 const errorMessage = document.getElementById('error-message') as HTMLDivElement
+const deleteAllBtn = document.getElementById('delete-all') as HTMLButtonElement
 const savedTodos = localStorage.getItem('todos')
 const todos: todo[] = savedTodos ? JSON.parse(savedTodos) : []
 
@@ -64,11 +65,19 @@ function addTodo() {
   input.value = ''
 }
 
+function deleteAll() {
+  todos.length = 0
+  localStorage.removeItem('todos')
+  renderTodos()
+}
+
 button.addEventListener('click', addTodo)
 input.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
     addTodo()
   }
 })
+
+deleteAllBtn.addEventListener('click', deleteAll)
 
 console.log('Hello from typescript')

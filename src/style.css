@@ -22,7 +22,7 @@ body {
   color: red;
 }
 
-#add-todo-button {
+.btn {
   padding: 8px 10px;
   font-size: 1rem;
 }
