@@ -92,12 +92,6 @@ function deleteAll() {
   renderTodos()
 }
 
-function deleteAll() {
-  todos.length = 0
-  localStorage.removeItem('todos')
-  renderTodos()
-}
-
 button.addEventListener('click', addTodo)
 input.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
