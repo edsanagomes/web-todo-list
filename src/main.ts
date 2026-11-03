@@ -5,12 +5,15 @@ const button = document.getElementById('add-todo-button') as HTMLButtonElement
 const list = document.getElementById('todo-elements') as HTMLUListElement
 const errorMessage = document.getElementById('error-message') as HTMLDivElement
 const deleteAllBtn = document.getElementById('delete-all') as HTMLButtonElement
+const dateInput = document.getElementById('todo-date-input') as HTMLInputElement
+const today = new Date().toLocaleDateString('en-CA')
 const savedTodos = localStorage.getItem('todos')
 const todos: todo[] = savedTodos ? JSON.parse(savedTodos) : []
 
 type todo = {
   text: string
   completed: boolean
+  date?: string
 }
 
 function renderTodos() {
@@ -28,8 +31,19 @@ function renderTodos() {
 
     const span = document.createElement('span')
     span.textContent = todo.text
+    const dateParagraph = document.createElement('p')
+    if (todo.date) {
+      const timeElement = document.createElement('time')
+      timeElement.dateTime = todo.date
+      timeElement.textContent = todo.date
+      dateParagraph.appendChild(timeElement)
+    } else {
+      dateParagraph.textContent = 'no due date'
+    }
+
     const removeBtn = document.createElement('button')
-    removeBtn.textContent = '🚮'
+    const icon = document.createElement('img')
+    icon.src = 'src/delete_icon.svg'
     removeBtn.classList.add('remove-btn')
     removeBtn.addEventListener('click', () => {
       todos.splice(index, 1)
@@ -38,7 +52,9 @@ function renderTodos() {
     })
     item.appendChild(checkbox)
     item.appendChild(span)
+    item.appendChild(dateParagraph)
     item.appendChild(removeBtn)
+    removeBtn.appendChild(icon)
     list.appendChild(item)
   })
 }
@@ -58,11 +74,16 @@ function addTodo() {
     errorMessage.textContent = 'Please add a task !'
     return
   }
+  if (dateInput.value !== '' && dateInput.value < today) {
+    errorMessage.textContent = 'Selected date cannot be in the past !'
+    return
+  }
   errorMessage.textContent = ''
-  todos.push({ text: text, completed: false })
+  todos.push({ text: text, completed: false, date: dateInput.value })
   saveTodos()
   renderTodos()
   input.value = ''
+  dateInput.value = ''
 }
 
 function deleteAll() {
