@@ -1,14 +1,20 @@
 import './style.css'
 
-const input = document.getElementById('todo-input') as HTMLInputElement
-const button = document.getElementById('add-todo-button') as HTMLButtonElement
-const list = document.getElementById('todo-elements') as HTMLUListElement
-const errorMessage = document.getElementById('error-message') as HTMLDivElement
-const deleteAllBtn = document.getElementById('delete-all') as HTMLButtonElement
-const dateInput = document.getElementById('todo-date-input') as HTMLInputElement
+const input = document.querySelector<HTMLInputElement>('#todo-input')
+const button = document.querySelector<HTMLButtonElement>('#add-todo-button')
+const list = document.querySelector<HTMLUListElement>('#todo-elements')
+const errorMessage =
+  document.querySelector<HTMLParagraphElement>('#error-message')
+const deleteAllBtn = document.querySelector<HTMLButtonElement>('#delete-all')
+const dateInput = document.querySelector<HTMLInputElement>('#todo-date-input')
 const today = new Date().toLocaleDateString('en-CA')
 const savedTodos = localStorage.getItem('todos')
 const todos: todo[] = savedTodos ? JSON.parse(savedTodos) : []
+
+if (!input || !button || !deleteAllBtn) {
+  // ! - if elements doesn't exist
+  throw new Error('Fatal Error: A required DOM element could not be found.')
+}
 
 type todo = {
   text: string
@@ -16,51 +22,80 @@ type todo = {
   date?: string
 }
 
+function createCheckbox(todo: todo): HTMLInputElement {
+  const checkbox = document.createElement('input')
+  checkbox.type = 'checkbox'
+  checkbox.checked = todo.completed
+  checkbox.addEventListener('change', () => {
+    todo.completed = checkbox.checked
+    saveTodos()
+  })
+  return checkbox
+}
+
+function createDateElement(date?: string): HTMLParagraphElement {
+  const dateParagraph = document.createElement('p')
+  if (date) {
+    const timeElement = document.createElement('time')
+    timeElement.dateTime = date
+    timeElement.textContent = date
+    dateParagraph.appendChild(timeElement)
+  } else {
+    dateParagraph.textContent = 'no due date'
+  }
+  return dateParagraph
+}
+
+function createRemoveButton(index: number): HTMLButtonElement {
+  const removeBtn = document.createElement('button')
+  const icon = document.createElement('img')
+  removeBtn.appendChild(icon)
+  icon.src = 'src/delete_icon.svg'
+  removeBtn.classList.add('remove-btn')
+  removeBtn.addEventListener('click', () => {
+    todos.splice(index, 1)
+    saveTodos()
+    renderTodos()
+  })
+  return removeBtn
+}
+
+function createSpan(text: string): HTMLSpanElement {
+  const span = document.createElement('span')
+  span.textContent = text
+  return span
+}
+
 function renderTodos() {
   // display all todos in the list
+  if (!list) {
+    // ! - if elements doesn't exist
+    throw new Error('Fatal Error: A required DOM element could not be found.')
+  }
+
   list.innerHTML = ''
   todos.forEach((todo, index) => {
     const item = document.createElement('li')
-    const checkbox = document.createElement('input')
-    checkbox.type = 'checkbox'
-    checkbox.checked = todo.completed
-    checkbox.addEventListener('change', () => {
-      todo.completed = checkbox.checked
-      saveTodos()
-    })
+    const checkbox = createCheckbox(todo)
+    const span = createSpan(todo.text)
+    const dateParagraph = createDateElement(todo.date)
+    const removeBtn = createRemoveButton(index)
 
-    const span = document.createElement('span')
-    span.textContent = todo.text
-    const dateParagraph = document.createElement('p')
-    if (todo.date) {
-      const timeElement = document.createElement('time')
-      timeElement.dateTime = todo.date
-      timeElement.textContent = todo.date
-      dateParagraph.appendChild(timeElement)
-    } else {
-      dateParagraph.textContent = 'no due date'
-    }
-
-    const removeBtn = document.createElement('button')
-    const icon = document.createElement('img')
-    icon.src = 'src/delete_icon.svg'
-    removeBtn.classList.add('remove-btn')
-    removeBtn.addEventListener('click', () => {
-      todos.splice(index, 1)
-      saveTodos()
-      renderTodos()
-    })
+    saveTodos()
     item.appendChild(checkbox)
     item.appendChild(span)
     item.appendChild(dateParagraph)
     item.appendChild(removeBtn)
-    removeBtn.appendChild(icon)
     list.appendChild(item)
   })
 }
-renderTodos()
 
 function saveTodos() {
+  if (!errorMessage) {
+    // ! - if elements doesn't exist
+    throw new Error('Fatal Error: A required DOM element could not be found.')
+  }
+
   try {
     localStorage.setItem('todos', JSON.stringify(todos))
   } catch {
@@ -69,6 +104,11 @@ function saveTodos() {
 }
 
 function addTodo() {
+  if (!dateInput || !errorMessage || !input) {
+    // ! - if elements doesn't exist
+    throw new Error('Fatal Error: A required DOM element could not be found.')
+  }
+
   const text = input.value.trim()
   if (text === '') {
     errorMessage.textContent = 'Please add a task !'
