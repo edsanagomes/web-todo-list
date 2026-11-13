@@ -55,3 +55,19 @@ body {
   border: none;
   margin-left: auto;
 }
+
+#todo-elements li.urgent-overdue {
+  background-color: red;
+}
+
+#todo-elements li.urgent-today {
+  background-color: orange;
+}
+
+#todo-elements li.urgent-soon {
+  background-color: yellow;
+}
+
+#todo-elements li.urgent-later {
+  background-color: green;
+}
