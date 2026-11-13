@@ -3,7 +3,8 @@ import './style.css'
 const input = document.querySelector<HTMLInputElement>('#todo-input')
 const button = document.querySelector<HTMLButtonElement>('#add-todo-button')
 const list = document.querySelector<HTMLUListElement>('#todo-elements')
-const errorMessage = document.querySelector<HTMLParagraphElement>('#error-message')
+const errorMessage =
+  document.querySelector<HTMLParagraphElement>('#error-message')
 const deleteAllBtn = document.querySelector<HTMLButtonElement>('#delete-all')
 const dateInput = document.querySelector<HTMLInputElement>('#todo-date-input')
 const today = new Date().toLocaleDateString('en-CA')
