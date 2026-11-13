@@ -10,6 +10,13 @@ const dateInput = document.querySelector<HTMLInputElement>('#todo-date-input')
 const today = new Date().toLocaleDateString('en-CA')
 const savedTodos = localStorage.getItem('todos')
 const todos: todo[] = savedTodos ? JSON.parse(savedTodos) : []
+const requiredDomErreur =
+  'Fatal Error: A required DOM element could not be found.'
+
+if (!input || !button || !deleteAllBtn) {
+  // ! - if elements doesn't exist
+  throw new Error(requiredDomErreur)
+}
 
 if (!input || !button || !deleteAllBtn) {
   // ! - if elements doesn't exist
@@ -69,13 +76,15 @@ function createSpan(text: string): HTMLSpanElement {
 function renderTodos() {
   // display all todos in the list
   if (!list) {
-    // ! - if elements doesn't exist
-    throw new Error('Fatal Error: A required DOM element could not be found.')
+    throw new Error('requiredDomErreur')
   }
 
   list.innerHTML = ''
   todos.forEach((todo, index) => {
     const item = document.createElement('li')
+    if (todo.date) {
+      item.classList.add(getUrgencyColor(todo.date))
+    }
     const checkbox = createCheckbox(todo)
     const span = createSpan(todo.text)
     const dateParagraph = createDateElement(todo.date)
@@ -90,10 +99,22 @@ function renderTodos() {
   })
 }
 
+function getUrgencyColor(dateString: string): string {
+  const now = new Date()
+  now.setHours(0, 0, 0, 0)
+  const due = new Date(`${dateString}T00:00:00`)
+  const daysLeft = Math.round(
+    (due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+  )
+  if (daysLeft < 0) return 'urgent-overdue'
+  if (daysLeft === 0) return 'urgent-today'
+  if (daysLeft <= 4) return 'urgent-soon'
+  return 'urgent-later'
+}
+
 function saveTodos() {
   if (!errorMessage) {
-    // ! - if elements doesn't exist
-    throw new Error('Fatal Error: A required DOM element could not be found.')
+    throw new Error('requiredDomErreur')
   }
 
   try {
@@ -105,8 +126,7 @@ function saveTodos() {
 
 function addTodo() {
   if (!dateInput || !errorMessage || !input) {
-    // ! - if elements doesn't exist
-    throw new Error('Fatal Error: A required DOM element could not be found.')
+    throw new Error('requiredDomErreur')
   }
 
   const text = input.value.trim()
