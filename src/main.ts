@@ -17,6 +17,11 @@ if (!input || !button || !deleteAllBtn) {
   throw new Error(requiredDomErreur)
 }
 
+if (!input || !button || !deleteAllBtn) {
+  // ! - if elements doesn't exist
+  throw new Error('Fatal Error: A required DOM element could not be found.')
+}
+
 type todo = {
   text: string
   completed: boolean
