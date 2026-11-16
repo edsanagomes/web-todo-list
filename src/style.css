@@ -57,17 +57,22 @@ body {
 }
 
 #todo-elements li.urgent-overdue {
-  background-color: red;
+  background-color: rgb(244, 68, 68);
 }
 
 #todo-elements li.urgent-today {
-  background-color: orange;
+  background-color: rgb(247, 171, 29);
 }
 
 #todo-elements li.urgent-soon {
-  background-color: yellow;
+  background-color: rgb(251, 251, 64);
 }
 
 #todo-elements li.urgent-later {
-  background-color: green;
+  background-color: rgb(79, 239, 79);
+}
+
+#overdue-message {
+  display: none;
+  color: red;
 }

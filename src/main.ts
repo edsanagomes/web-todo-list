@@ -7,6 +7,8 @@ const errorMessage =
   document.querySelector<HTMLParagraphElement>('#error-message')
 const deleteAllBtn = document.querySelector<HTMLButtonElement>('#delete-all')
 const dateInput = document.querySelector<HTMLInputElement>('#todo-date-input')
+const overdueMessage =
+  document.querySelector<HTMLParagraphElement>('#overdue-message')
 const today = new Date().toLocaleDateString('en-CA')
 const savedTodos = localStorage.getItem('todos')
 const todos: todo[] = savedTodos ? JSON.parse(savedTodos) : []
@@ -16,11 +18,6 @@ const requiredDomErreur =
 if (!input || !button || !deleteAllBtn) {
   // ! - if elements doesn't exist
   throw new Error(requiredDomErreur)
-}
-
-if (!input || !button || !deleteAllBtn) {
-  // ! - if elements doesn't exist
-  throw new Error('Fatal Error: A required DOM element could not be found.')
 }
 
 type todo = {
@@ -38,6 +35,19 @@ function createCheckbox(todo: todo): HTMLInputElement {
     saveTodos()
   })
   return checkbox
+}
+
+function checkOverdueAlert() {
+  if (!overdueMessage) return
+  const hasOverdue = todos.some((todo) => {
+    if (!todo.date) return false
+    return getUrgencyColor(todo.date) === 'urgent-overdue'
+  })
+  if (hasOverdue) {
+    overdueMessage.style.display = 'block'
+  } else {
+    overdueMessage.style.display = 'none'
+  }
 }
 
 function createDateElement(date?: string): HTMLParagraphElement {
@@ -97,6 +107,7 @@ function renderTodos() {
     item.appendChild(removeBtn)
     list.appendChild(item)
   })
+  checkOverdueAlert()
 }
 
 function getUrgencyColor(dateString: string): string {
@@ -128,7 +139,6 @@ function addTodo() {
   if (!dateInput || !errorMessage || !input) {
     throw new Error('requiredDomErreur')
   }
-
   const text = input.value.trim()
   if (text === '') {
     errorMessage.textContent = 'Please add a task !'
@@ -151,7 +161,6 @@ function deleteAll() {
   localStorage.removeItem('todos')
   renderTodos()
 }
-
 button.addEventListener('click', addTodo)
 input.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
