@@ -123,19 +123,6 @@ function getUrgencyColor(dateString: string): string {
   return 'urgent-later'
 }
 
-function getUrgencyColor(dateString: string): string {
-  const now = new Date()
-  now.setHours(0, 0, 0, 0)
-  const due = new Date(`${dateString}T00:00:00`)
-  const daysLeft = Math.round(
-    (due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
-  )
-  if (daysLeft < 0) return 'urgent-overdue'
-  if (daysLeft === 0) return 'urgent-today'
-  if (daysLeft <= 4) return 'urgent-soon'
-  return 'urgent-later'
-}
-
 function saveTodos() {
   if (!errorMessage) {
     throw new Error('requiredDomErreur')
