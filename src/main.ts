@@ -1,15 +1,10 @@
 import './style.css'
+import { elements } from './dom'
+import { addTodo, saveTodos } from './todos'
+import type { todo } from './types.ts'
 
-const input = document.querySelector<HTMLInputElement>('#todo-input')
-const button = document.querySelector<HTMLButtonElement>('#add-todo-button')
-const list = document.querySelector<HTMLUListElement>('#todo-elements')
-const errorMessage =
-  document.querySelector<HTMLParagraphElement>('#error-message')
-const deleteAllBtn = document.querySelector<HTMLButtonElement>('#delete-all')
-const dateInput = document.querySelector<HTMLInputElement>('#todo-date-input')
-const overdueMessage =
-  document.querySelector<HTMLParagraphElement>('#overdue-message')
-const today = new Date().toLocaleDateString('en-CA')
+const { input, button, list, deleteAllBtn, overdueMessage } = elements
+
 const savedTodos = localStorage.getItem('todos')
 const todos: todo[] = savedTodos ? JSON.parse(savedTodos) : []
 const requiredDomErreur =
@@ -20,10 +15,30 @@ if (!input || !button || !deleteAllBtn) {
   throw new Error(requiredDomErreur)
 }
 
-type todo = {
-  text: string
-  completed: boolean
-  date?: string
+function renderTodos() {
+  // display all todos in the list
+  if (!list) {
+    throw new Error('requiredDomErreur')
+  }
+
+  list.innerHTML = ''
+  todos.forEach((todo, index) => {
+    const item = document.createElement('li')
+    if (todo.date) {
+      item.classList.add(getUrgencyColor(todo.date))
+    }
+    const checkbox = createCheckbox(todo)
+    const span = createSpan(todo.text)
+    const dateParagraph = createDateElement(todo.date)
+    const removeBtn = createRemoveButton(index)
+
+    item.appendChild(checkbox)
+    item.appendChild(span)
+    item.appendChild(dateParagraph)
+    item.appendChild(removeBtn)
+    list.appendChild(item)
+  })
+  checkOverdueAlert()
 }
 
 function createCheckbox(todo: todo): HTMLInputElement {
@@ -32,7 +47,7 @@ function createCheckbox(todo: todo): HTMLInputElement {
   checkbox.checked = todo.completed
   checkbox.addEventListener('change', () => {
     todo.completed = checkbox.checked
-    saveTodos()
+    saveTodos(todos)
   })
   return checkbox
 }
@@ -71,7 +86,7 @@ function createRemoveButton(index: number): HTMLButtonElement {
   removeBtn.classList.add('remove-btn')
   removeBtn.addEventListener('click', () => {
     todos.splice(index, 1)
-    saveTodos()
+    saveTodos(todos)
     renderTodos()
   })
   return removeBtn
@@ -81,33 +96,6 @@ function createSpan(text: string): HTMLSpanElement {
   const span = document.createElement('span')
   span.textContent = text
   return span
-}
-
-function renderTodos() {
-  // display all todos in the list
-  if (!list) {
-    throw new Error('requiredDomErreur')
-  }
-
-  list.innerHTML = ''
-  todos.forEach((todo, index) => {
-    const item = document.createElement('li')
-    if (todo.date) {
-      item.classList.add(getUrgencyColor(todo.date))
-    }
-    const checkbox = createCheckbox(todo)
-    const span = createSpan(todo.text)
-    const dateParagraph = createDateElement(todo.date)
-    const removeBtn = createRemoveButton(index)
-
-    saveTodos()
-    item.appendChild(checkbox)
-    item.appendChild(span)
-    item.appendChild(dateParagraph)
-    item.appendChild(removeBtn)
-    list.appendChild(item)
-  })
-  checkOverdueAlert()
 }
 
 function getUrgencyColor(dateString: string): string {
@@ -123,48 +111,17 @@ function getUrgencyColor(dateString: string): string {
   return 'urgent-later'
 }
 
-function saveTodos() {
-  if (!errorMessage) {
-    throw new Error('requiredDomErreur')
-  }
-
-  try {
-    localStorage.setItem('todos', JSON.stringify(todos))
-  } catch {
-    errorMessage.textContent = 'storage is full or blocked'
-  }
-}
-
-function addTodo() {
-  if (!dateInput || !errorMessage || !input) {
-    throw new Error('requiredDomErreur')
-  }
-  const text = input.value.trim()
-  if (text === '') {
-    errorMessage.textContent = 'Please add a task !'
-    return
-  }
-  if (dateInput.value !== '' && dateInput.value < today) {
-    errorMessage.textContent = 'Selected date cannot be in the past !'
-    return
-  }
-  errorMessage.textContent = ''
-  todos.push({ text: text, completed: false, date: dateInput.value })
-  saveTodos()
-  renderTodos()
-  input.value = ''
-  dateInput.value = ''
-}
-
 function deleteAll() {
   todos.length = 0
   localStorage.removeItem('todos')
   renderTodos()
 }
-button.addEventListener('click', addTodo)
+button.addEventListener('click', () => {
+  addTodo(todos, renderTodos)
+})
 input.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
-    addTodo()
+    addTodo(todos, renderTodos)
   }
 })
 
