@@ -9,3 +9,5 @@ export const elements = {
     document.querySelector<HTMLParagraphElement>('#overdue-message'),
   today: new Date().toLocaleDateString('en-CA'),
 }
+
+export const Url = 'https://api.todos.in.jt-lab.ch'

@@ -1,12 +1,11 @@
 import './style.css'
+import { getTodos } from './api.ts'
 import { elements } from './dom'
 import { addTodo, saveTodos } from './todos'
 import type { todo } from './types.ts'
 
 const { input, button, list, deleteAllBtn, overdueMessage } = elements
-
-const savedTodos = localStorage.getItem('todos')
-const todos: todo[] = savedTodos ? JSON.parse(savedTodos) : []
+const todos: todo[] = await getTodos()
 const requiredDomErreur =
   'Fatal Error: A required DOM element could not be found.'
 
@@ -24,12 +23,12 @@ function renderTodos() {
   list.innerHTML = ''
   todos.forEach((todo, index) => {
     const item = document.createElement('li')
-    if (todo.date) {
-      item.classList.add(getUrgencyColor(todo.date))
+    if (todo.due_date) {
+      item.classList.add(getUrgencyColor(todo.due_date))
     }
     const checkbox = createCheckbox(todo)
-    const span = createSpan(todo.text)
-    const dateParagraph = createDateElement(todo.date)
+    const span = createSpan(todo.title)
+    const dateParagraph = createDateElement(todo.due_date)
     const removeBtn = createRemoveButton(index)
 
     item.appendChild(checkbox)
@@ -44,9 +43,9 @@ function renderTodos() {
 function createCheckbox(todo: todo): HTMLInputElement {
   const checkbox = document.createElement('input')
   checkbox.type = 'checkbox'
-  checkbox.checked = todo.completed
+  checkbox.checked = todo.done
   checkbox.addEventListener('change', () => {
-    todo.completed = checkbox.checked
+    todo.done = checkbox.checked
     saveTodos(todos)
   })
   return checkbox
@@ -55,8 +54,8 @@ function createCheckbox(todo: todo): HTMLInputElement {
 function checkOverdueAlert() {
   if (!overdueMessage) return
   const hasOverdue = todos.some((todo) => {
-    if (!todo.date) return false
-    return getUrgencyColor(todo.date) === 'urgent-overdue'
+    if (!todo.due_date) return false
+    return getUrgencyColor(todo.due_date) === 'urgent-overdue'
   })
   if (hasOverdue) {
     overdueMessage.style.display = 'block'
@@ -126,5 +125,5 @@ input.addEventListener('keydown', (event) => {
 })
 
 deleteAllBtn.addEventListener('click', deleteAll)
-
+renderTodos()
 console.log('Hello from typescript')
