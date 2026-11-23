@@ -4,7 +4,6 @@ import { addTodo, saveTodos } from './todos'
 import type { todo } from './types.ts'
 
 const { input, button, list, deleteAllBtn, overdueMessage } = elements
-
 const savedTodos = localStorage.getItem('todos')
 const todos: todo[] = savedTodos ? JSON.parse(savedTodos) : []
 const requiredDomErreur =
