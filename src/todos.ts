@@ -1,8 +1,7 @@
 import { elements } from './dom'
+import type { todo } from './types'
 
 const { dateInput, errorMessage, input, today } = elements
-
-import type { todo } from './types'
 
 export function addTodo(todos: todo[], renderTodos: Function) {
   if (!dateInput || !errorMessage || !input) {
@@ -18,7 +17,12 @@ export function addTodo(todos: todo[], renderTodos: Function) {
     return
   }
   errorMessage.textContent = ''
-  todos.push({ text: text, completed: false, date: dateInput.value })
+  todos.push({
+    title: text,
+    done: false,
+    due_date: dateInput.value,
+    content: null,
+  })
   saveTodos(todos)
   renderTodos()
   input.value = ''

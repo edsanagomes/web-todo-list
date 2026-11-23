@@ -25,7 +25,7 @@ export async function updateTodos(todoItem: todo): Promise<void> {
   const response = await fetch(`${Url}/todos/${todoItem.id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ completed: todoItem.completed }),
+    body: JSON.stringify({ completed: todoItem.done }),
   })
   if (!response.ok) {
     throw new Error('Unable to update task !')
